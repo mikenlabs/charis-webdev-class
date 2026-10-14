@@ -1,7 +1,16 @@
-class work
- create 5 folders, inside of each folder should have 12 sub folders, inside of the 12 subfolders there should be four sub folders, and inside of the four sub folders there should be 7 files
+Assignment
+ 
+ 
+ 1. create 5 folders, inside of each folder should have 12 sub folders, inside of the 12 subfolders there should be four sub folders, and inside of the four sub folders there should be 7 files
 
  five folders : 2021 - 2025
  12 sub folder ; Jan - Dec
  4 sub folders: week1 - week4
  7 files: monday.css, tues.html, wed.js, thur.txt, fri.py, sat.md, sun.bat
+
+ send to github copy the link and send to the group (remember it should be a public repository)
+
+ 2. install git, nodejs and python
+
+
+ 3. read up on HTML, CSS and JS
