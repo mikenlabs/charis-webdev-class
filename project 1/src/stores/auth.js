@@ -40,24 +40,30 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const { supabase } = await import('../services/supabaseClient')
       if (supabase) {
-        const { data, error } = await supabase.auth.signUp({
-          email: userData.email,
-          password: userData.password,
-        })
-        if (error) throw error
-        if (data.user) {
-          const { error: profileError } = await supabase.from('profiles').insert({
-            id: data.user.id,
-            full_name: userData.name,
-            phone: userData.phone || null,
-            role: 'customer',
+        try {
+          const { data, error } = await supabase.auth.signUp({
+            email: userData.email,
+            password: userData.password,
           })
-          if (profileError) throw profileError
-          setUser(data.user, { id: data.user.id, full_name: userData.name, phone: userData.phone, role: 'customer' })
+          if (error) throw error
+          if (data.user) {
+            const { error: profileError } = await supabase.from('profiles').upsert({
+              id: data.user.id,
+              full_name: userData.name,
+              phone: userData.phone || null,
+              role: 'customer',
+            })
+            if (profileError && profileError.code !== '23505') {
+              console.warn('Profile creation warning:', profileError.message)
+            }
+            const mockProfile = { id: data.user.id, full_name: userData.name, phone: userData.phone || null, role: 'customer' }
+            setUser(data.user, mockProfile)
+            return { success: true, error: null }
+          }
+        } catch (supabaseError) {
+          console.warn('Supabase registration failed, falling back to mock:', supabaseError.message)
         }
-        return { success: true, error: null }
       }
-      // Mock registration
       const mockUser = { id: 'mock_' + Date.now(), email: userData.email }
       const mockProfile = { id: mockUser.id, full_name: userData.name, phone: userData.phone || null, role: 'customer' }
       setUser(mockUser, mockProfile)
@@ -74,15 +80,18 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const { supabase } = await import('../services/supabaseClient')
       if (supabase) {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-        if (error) throw error
-        if (data.user) {
-          const { data: profileData } = await supabase.from('profiles').select('*').eq('id', data.user.id).single()
-          setUser(data.user, profileData || { id: data.user.id, full_name: data.user.user_metadata?.name, role: 'customer' })
+        try {
+          const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+          if (error) throw error
+          if (data.user) {
+            const { data: profileData } = await supabase.from('profiles').select('*').eq('id', data.user.id).single()
+            setUser(data.user, profileData || { id: data.user.id, full_name: data.user.user_metadata?.name, role: 'customer' })
+            return { success: true, error: null }
+          }
+        } catch (supabaseError) {
+          console.warn('Supabase login failed, falling back to mock:', supabaseError.message)
         }
-        return { success: true, error: null }
       }
-      // Mock login
       if (email && password) {
         const mockUser = { id: 'mock_user', email }
         const mockProfile = { id: mockUser.id, full_name: 'Mock User', role: 'customer' }

@@ -4,7 +4,7 @@
     <div class="container mx-auto px-4 py-8 text-center text-white relative z-10">
       <h3 class="font-poppins font-bold text-xl sm:text-2xl mb-2">{{ title }}</h3>
       <p class="text-sm opacity-90 mb-4">{{ subtitle }}</p>
-      <router-link :to="link" class="btn btn-secondary">Order Now</router-link>
+      <router-link :to="link" class="btn btn-outline">Order Now</router-link>
     </div>
   </div>
 </template>

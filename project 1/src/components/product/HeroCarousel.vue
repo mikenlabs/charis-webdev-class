@@ -12,7 +12,7 @@
         <div class="text-white max-w-md">
           <h2 class="font-poppins font-bold text-2xl sm:text-3xl mb-2">{{ slide.title }}</h2>
           <p class="text-sm opacity-90 mb-4">{{ slide.subtitle }}</p>
-          <router-link :to="slide.link" class="btn btn-secondary">Order Now</router-link>
+          <router-link :to="slide.link" class="btn btn-outline">Order Now</router-link>
         </div>
       </div>
     </div>
@@ -48,7 +48,7 @@ const slides = [
     id: 1,
     title: 'Authentic Nigerian Flavours',
     subtitle: 'Freshly prepared meals delivered to your doorstep every day.',
-    image: 'https://images.unsplash.com/photo-1604908176997-125f25c0bf6b?w=800',
+    image: 'https://picsum.photos/seed/jollof/800/800',
     link: '/shop',
   },
   {

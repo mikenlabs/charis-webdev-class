@@ -25,7 +25,10 @@ const routes = [
   { path: '/my-orders', name: 'MyOrders', component: MyOrders, meta: { requiresAuth: true } },
   { path: '/about', name: 'About', component: About },
   { path: '/contact', name: 'Contact', component: Contact },
-  { path: '/admin', name: 'Admin', component: Admin, meta: { requiresAuth: true, requiresAdmin: true } },
+   { path: '/admin', name: 'Admin', component: Admin, meta: { requiresAuth: true, requiresAdmin: true } },
+  { path: '/admin/products', name: 'AdminProducts', component: Admin, meta: { requiresAuth: true, requiresAdmin: true } },
+  { path: '/admin/categories', name: 'AdminCategories', component: Admin, meta: { requiresAuth: true, requiresAdmin: true } },
+  { path: '/admin/orders', name: 'AdminOrders', component: Admin, meta: { requiresAuth: true, requiresAdmin: true } },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
 ]
 

@@ -2,22 +2,29 @@ import { products as mockProducts, categories as mockCategories } from '../mock/
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
+async function getClient() {
+  const { supabase } = await import('./supabaseClient')
+  return supabase
+}
+
 class ProductService {
   constructor() {
     this.useMock = !import.meta.env.VITE_SUPABASE_URL
   }
 
   async getCategories() {
-    if (this.useMock) {
+    const client = await getClient()
+    if (!client || this.useMock) {
       await delay(200)
       return { data: mockCategories, error: null }
     }
-    const { data, error } = await supabase.from('categories').select('*')
+    const { data, error } = await client.from('categories').select('*')
     return { data, error }
   }
 
   async getProducts({ category, search, sort, limit, offset } = {}) {
-    if (this.useMock) {
+    const client = await getClient()
+    if (!client || this.useMock) {
       await delay(300)
       let result = [...mockProducts]
       if (category) result = result.filter((p) => p.category_id === category)
@@ -33,7 +40,7 @@ class ProductService {
       if (limit) result = result.slice(0, limit + (offset || 0))
       return { data: result, error: null, count: result.length }
     }
-    let query = supabase.from('products').select('*')
+    let query = client.from('products').select('*')
     if (category) query = query.eq('category_id', category)
     if (search) query = query.ilike('name', `%${search}%`)
     if (sort === 'price_asc') query = query.order('price', { ascending: true })
@@ -45,24 +52,26 @@ class ProductService {
   }
 
   async getProduct(id) {
-    if (this.useMock) {
+    const client = await getClient()
+    if (!client || this.useMock) {
       await delay(200)
       const product = mockProducts.find((p) => p.id === id)
       return { data: product || null, error: product ? null : { message: 'Not found' } }
     }
-    const { data, error } = await supabase.from('products').select('*').eq('id', id).single()
+    const { data, error } = await client.from('products').select('*').eq('id', id).single()
     return { data, error }
   }
 
   async getRelatedProducts(categoryId, excludeId, limit = 4) {
-    if (this.useMock) {
+    const client = await getClient()
+    if (!client || this.useMock) {
       await delay(200)
       const result = mockProducts
         .filter((p) => p.category_id === categoryId && p.id !== excludeId)
         .slice(0, limit)
       return { data: result, error: null }
     }
-    const { data, error } = await supabase
+    const { data, error } = await client
       .from('products')
       .select('*')
       .eq('category_id', categoryId)
@@ -72,17 +81,23 @@ class ProductService {
   }
 
   async createProduct(product) {
-    const { data, error } = await supabase.from('products').insert(product).select().single()
+    const client = await getClient()
+    if (!client) return { data: null, error: { message: 'Supabase not configured' } }
+    const { data, error } = await client.from('products').insert(product).select().single()
     return { data, error }
   }
 
   async updateProduct(id, updates) {
-    const { data, error } = await supabase.from('products').update(updates).eq('id', id).select().single()
+    const client = await getClient()
+    if (!client) return { data: null, error: { message: 'Supabase not configured' } }
+    const { data, error } = await client.from('products').update(updates).eq('id', id).select().single()
     return { data, error }
   }
 
   async deleteProduct(id) {
-    const { error } = await supabase.from('products').delete().eq('id', id)
+    const client = await getClient()
+    if (!client) return { error: { message: 'Supabase not configured' } }
+    const { error } = await client.from('products').delete().eq('id', id)
     return { error }
   }
 }
